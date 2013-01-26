@@ -1,0 +1,468 @@
+﻿<metro:Window x:Class="ODTCONVERT.MainWindow"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:metro="http://schemas.codeplex.com/elysium"
+              xmlns:params="http://schemas.codeplex.com/elysium/params"    
+              xmlns:res ="clr-namespace:ODTCONVERT.Properties"
+              params:Manager.AccentBrush="{x:Static metro:AccentBrushes.Blue}"
+              params:Design.AccentBrush="{x:Static metro:AccentBrushes.Blue}"
+    Title="{x:Static res:Resources.Title}" WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True" Width="800" Height="525"  Icon="Resources/icon.png" params:Design.Theme="Light" params:Manager.Theme="Light" params:Manager.ContrastBrush="DarkGray">
+    <Grid >
+        <metro:ProgressBar x:Name="pbParse" Height="7" VerticalAlignment="Top" params:Progress.BusyElementSize="5" RenderTransformOrigin="1,0" UseLayoutRounding="False" ScrollViewer.VerticalScrollBarVisibility="Disabled" SnapsToDevicePixels="True"/>
+        <Button x:Name="btnRead" Content="" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Width="26" Foreground="White" params:Design.Theme="Light" Click="btnRead_Click" BorderThickness="0" Height="26" MinWidth="26">
+            <Button.Template>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Image Name="Normal" Source="{DynamicResource file}" />
+                        <Image Name="Hover" Source="{DynamicResource file_hover}" Visibility="Hidden" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                            <Setter Property="UIElement.Visibility" TargetName="Normal" Value="Hidden" />
+                            <Setter Property="UIElement.Visibility" TargetName="Hover" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Button x:Name="btnSave" Content="" HorizontalAlignment="Left" Margin="48,14,0,0" VerticalAlignment="Top" Width="26" Foreground="White" params:Design.Theme="Light" Click="btnSave_Click" BorderThickness="0" Height="26" MinWidth="26" >
+            <Button.Template>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Image Name="Normal" Source="{DynamicResource save_as}" />
+                        <Image Name="Hover" Source="{DynamicResource save_as_hover}" Visibility="Hidden" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                            <Setter Property="UIElement.Visibility" TargetName="Normal" Value="Hidden" />
+                            <Setter Property="UIElement.Visibility" TargetName="Hover" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <Button x:Name="btnSetting" Content="" HorizontalAlignment="Left" Margin="88,14,0,0" VerticalAlignment="Top" Width="26" Foreground="White" params:Design.Theme="Light" Click="btnSetting_Click" BorderThickness="0" Height="26" MinWidth="26" Padding="10" >
+            <Button.Template>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Image Name="Normal" Source="{DynamicResource settings}" />
+                        <Image Name="Hover" Source="{DynamicResource settings_hover}" Visibility="Hidden" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                            <Setter Property="UIElement.Visibility" TargetName="Normal" Value="Hidden" />
+                            <Setter Property="UIElement.Visibility" TargetName="Hover" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <TextBox x:Name="lbPath" Text="{x:Static res:Resources.SourcePathText}" Margin="125,12,10,0" VerticalAlignment="Top" Height="31" FontFamily="Segoe UI SemiLight" FontSize="16"/>
+        <TabControl Margin="0,48,0,0" IsSynchronizedWithCurrentItem="True" SelectedIndex="1" x:Name="tabs">
+            <TabItem x:Name ="tabTextMode" >
+                <DockPanel LastChildFill="True">
+                    <DockPanel x:Name="sliderPanel" DockPanel.Dock="Bottom" Margin="0,0,0,0" Background="{x:Static metro:AccentBrushes.Blue}" LastChildFill="True">
+                        <Slider x:Name="scale" DockPanel.Dock="Left" Minimum="0.5" Maximum="1.5" Margin="10" Width="100" Value="1" ValueChanged="scale_ValueChanged" MouseDoubleClick ="scale_Click" LargeChange="0" Height="10" MinHeight="10" Style="{DynamicResource SliderStyle1}" SmallChange="1" >
+                            <Slider.Resources>
+                                <Style x:Key="SliderStyle1" TargetType="{x:Type Slider}">
+                                    <Setter Property="Background" Value="{x:Null}"/>
+                                    <Setter Property="BorderBrush" Value="#FF777777"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="FontSize" Value="{Binding (params:General.ContentFontSize), Mode=OneWay, RelativeSource={RelativeSource Self}}"/>
+                                    <Setter Property="FontStretch" Value="Normal"/>
+                                    <Setter Property="FontStyle" Value="Normal"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                    <Setter Property="Focusable" Value="False"/>
+                                    <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                    <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                    <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="BorderBrush" Value="#FFB8B5B2"/>
+                                        </Trigger>
+                                        <Trigger Property="Orientation" Value="Horizontal">
+                                            <Setter Property="MinHeight" Value="14"/>
+                                            <Setter Property="Height" Value="18"/>
+                                            <Setter Property="MaxHeight" Value="22"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Slider}">
+                                                        <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                            </Grid.RowDefinitions>
+                                                            <TickBar Fill="{TemplateBinding BorderBrush}" Height="{TemplateBinding params:Slider.TrackSize}" Placement="Top" Grid.Row="0" Visibility="Collapsed"/>
+                                                            <Rectangle x:Name="PART_SelectionRange" Fill="Black" Height="{TemplateBinding params:Slider.TrackSize}" Grid.Row="1" StrokeThickness="0" Visibility="Hidden"/>
+                                                            <Track x:Name="PART_Track" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch">
+                                                                <Track.DecreaseRepeatButton>
+                                                                    <RepeatButton Command="Slider.DecreaseLarge" Height="{TemplateBinding params:Slider.TrackSize}" IsEnabled="{TemplateBinding IsEnabled}">
+                                                                        <RepeatButton.Style>
+                                                                            <Style TargetType="{x:Type RepeatButton}">
+                                                                                <Setter Property="Background" Value="#FFCCEAFF"/>
+                                                                                <Style.BasedOn>
+                                                                                    <Style TargetType="{x:Type RepeatButton}">
+                                                                                        <Setter Property="Background" Value="#FF777777"/>
+                                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                        <Setter Property="Focusable" Value="False"/>
+                                                                                        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                        <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                        <Setter Property="Template">
+                                                                                            <Setter.Value>
+                                                                                                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                                                                    <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" StrokeThickness="0" Width="{TemplateBinding Width}"/>
+                                                                                                </ControlTemplate>
+                                                                                            </Setter.Value>
+                                                                                        </Setter>
+                                                                                        <Style.Triggers>
+                                                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                                                <Setter Property="Background" Value="#FFDEDEDE"/>
+                                                                                            </Trigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Style.BasedOn>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FFB8B5B2"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </RepeatButton.Style>
+                                                                    </RepeatButton>
+                                                                </Track.DecreaseRepeatButton>
+                                                                <Track.IncreaseRepeatButton>
+                                                                    <RepeatButton Command="Slider.IncreaseLarge" Height="{TemplateBinding params:Slider.TrackSize}" IsEnabled="{TemplateBinding IsEnabled}">
+                                                                        <RepeatButton.Style>
+                                                                            <Style TargetType="{x:Type RepeatButton}">
+                                                                                <Setter Property="Background" Value="#FFCCEAFF"/>
+                                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                <Setter Property="Focusable" Value="False"/>
+                                                                                <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                                                            <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" StrokeThickness="0" Width="{TemplateBinding Width}"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FFDEDEDE"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </RepeatButton.Style>
+                                                                    </RepeatButton>
+                                                                </Track.IncreaseRepeatButton>
+                                                                <Track.Thumb>
+                                                                    <Thumb Height="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" IsEnabled="{TemplateBinding IsEnabled}" Width="{TemplateBinding params:Slider.ThumbThickness}">
+                                                                        <Thumb.BorderThickness>
+                                                                            <Binding ConverterParameter="Right" Mode="OneWay" Path="(params:General.DefaultPaddingValue)" RelativeSource="{RelativeSource Self}">
+                                                                                <Binding.Converter>
+                                                                                    <metro:DoubleToThicknessConverter/>
+                                                                                </Binding.Converter>
+                                                                            </Binding>
+                                                                        </Thumb.BorderThickness>
+                                                                        <Thumb.Style>
+                                                                            <Style TargetType="{x:Type Thumb}">
+                                                                                <Setter Property="Background" Value="White"/>
+                                                                                <Setter Property="BorderBrush" Value="White"/>
+                                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                <Setter Property="Focusable" Value="False"/>
+                                                                                <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="{x:Type Thumb}">
+                                                                                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Width="{TemplateBinding Width}"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="#FFC9C9C9"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsDragging" Value="True">
+                                                                                        <Setter Property="Background" Value="#FF898989"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FF5F5F5F"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Thumb.Style>
+                                                                    </Thumb>
+                                                                </Track.Thumb>
+                                                            </Track>
+                                                            <TickBar Fill="{TemplateBinding BorderBrush}" Height="{TemplateBinding params:Slider.TrackSize}" Placement="Bottom" Grid.Row="2" Visibility="Collapsed"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="Orientation" Value="Vertical">
+                                            <Setter Property="MinWidth" Value="14"/>
+                                            <Setter Property="Width" Value="18"/>
+                                            <Setter Property="MaxWidth" Value="22"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Slider}">
+                                                        <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TickBar Grid.Column="0" Fill="{TemplateBinding BorderBrush}" Placement="Top" Visibility="Collapsed" Width="{TemplateBinding params:Slider.TrackSize}"/>
+                                                            <Rectangle x:Name="PART_SelectionRange" Grid.Column="1" Fill="Black" StrokeThickness="0" Visibility="Hidden" Width="{TemplateBinding params:Slider.TrackSize}"/>
+                                                            <Track x:Name="PART_Track" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                                <Track.DecreaseRepeatButton>
+                                                                    <RepeatButton Command="Slider.DecreaseLarge" IsEnabled="{TemplateBinding IsEnabled}" Width="{TemplateBinding params:Slider.TrackSize}">
+                                                                        <RepeatButton.Style>
+                                                                            <Style TargetType="{x:Type RepeatButton}">
+                                                                                <Setter Property="Background" Value="#FF017BCD"/>
+                                                                                <Style.BasedOn>
+                                                                                    <Style TargetType="{x:Type RepeatButton}">
+                                                                                        <Setter Property="Background" Value="#FF777777"/>
+                                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                        <Setter Property="Focusable" Value="False"/>
+                                                                                        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                        <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                        <Setter Property="Template">
+                                                                                            <Setter.Value>
+                                                                                                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                                                                    <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" StrokeThickness="0" Width="{TemplateBinding Width}"/>
+                                                                                                </ControlTemplate>
+                                                                                            </Setter.Value>
+                                                                                        </Setter>
+                                                                                        <Style.Triggers>
+                                                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                                                <Setter Property="Background" Value="#FFDEDEDE"/>
+                                                                                            </Trigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Style.BasedOn>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FFB8B5B2"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </RepeatButton.Style>
+                                                                    </RepeatButton>
+                                                                </Track.DecreaseRepeatButton>
+                                                                <Track.IncreaseRepeatButton>
+                                                                    <RepeatButton Command="Slider.IncreaseLarge" IsEnabled="{TemplateBinding IsEnabled}" Width="{TemplateBinding params:Slider.TrackSize}">
+                                                                        <RepeatButton.Style>
+                                                                            <Style TargetType="{x:Type RepeatButton}">
+                                                                                <Setter Property="Background" Value="#FF777777"/>
+                                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                <Setter Property="Focusable" Value="False"/>
+                                                                                <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                                                            <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" StrokeThickness="0" Width="{TemplateBinding Width}"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FFDEDEDE"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </RepeatButton.Style>
+                                                                    </RepeatButton>
+                                                                </Track.IncreaseRepeatButton>
+                                                                <Track.Thumb>
+                                                                    <Thumb Height="{TemplateBinding params:Slider.ThumbThickness}" IsEnabled="{TemplateBinding IsEnabled}" Width="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                                                        <Thumb.BorderThickness>
+                                                                            <Binding ConverterParameter="Top" Mode="OneWay" Path="(params:General.DefaultPaddingValue)" RelativeSource="{RelativeSource Self}">
+                                                                                <Binding.Converter>
+                                                                                    <metro:DoubleToThicknessConverter/>
+                                                                                </Binding.Converter>
+                                                                            </Binding>
+                                                                        </Thumb.BorderThickness>
+                                                                        <Thumb.Style>
+                                                                            <Style TargetType="{x:Type Thumb}">
+                                                                                <Setter Property="Background" Value="#FF777777"/>
+                                                                                <Setter Property="BorderBrush" Value="White"/>
+                                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                                                                <Setter Property="Focusable" Value="False"/>
+                                                                                <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+                                                                                <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+                                                                                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                                                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="{x:Type Thumb}">
+                                                                                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Width="{TemplateBinding Width}"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Background" Value="#FF4D4D4D"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsDragging" Value="True">
+                                                                                        <Setter Property="Background" Value="#FF4D4D4D"/>
+                                                                                    </Trigger>
+                                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                                        <Setter Property="Background" Value="#FFB8B5B2"/>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Thumb.Style>
+                                                                    </Thumb>
+                                                                </Track.Thumb>
+                                                            </Track>
+                                                            <TickBar Grid.Column="2" Fill="{TemplateBinding BorderBrush}" Placement="Bottom" Visibility="Collapsed" Width="{TemplateBinding params:Slider.TrackSize}"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Slider.Resources>
+                        </Slider>
+                        <StatusBar Background="{x:Null}" Padding="5,0" >
+                            <StatusBarItem Foreground="White" MinWidth="50"  >
+                                <TextBlock x:Name="scaleValue" FontSize="16" FontFamily="/ODTConverter;component/Resources/#Segoe UI Semilight" Margin="0,0,5,0" TextAlignment="Right" >100%</TextBlock>
+                            </StatusBarItem>
+                            <Separator/>
+                            <StatusBarItem>
+                                <TextBlock x:Name="lbStatus" FontSize="16" FontFamily="/ODTConverter;component/Resources/#Segoe UI Semilight" Margin="5,0" Foreground="White" Text="{x:Static res:Resources.StatusReadyText}"/>
+                            </StatusBarItem>
+                        </StatusBar>
+                    </DockPanel>
+                    <Border CornerRadius="0" BorderBrush="{x:Static metro:AccentBrushes.Blue}" BorderThickness="1" DockPanel.Dock="Right" Panel.ZIndex="1" x:Name="sidebar">
+                        <StackPanel  DockPanel.Dock="Right" Panel.ZIndex="1" >
+                            <DockPanel LastChildFill="True" Margin="15">
+                                <Button x:Name="sidebarClose" Content="" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Width="26" Foreground="White" params:Design.Theme="Light" Click="closeSettingsBar" BorderThickness="0" Height="26" MinWidth="26">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid>
+                                                <Image Name="Normal" Source="{DynamicResource next}" />
+                                                <Image Name="Hover" Source="{DynamicResource next}" Visibility="Hidden" />
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                                    <Setter Property="UIElement.Visibility" TargetName="Normal" Value="Hidden" />
+                                                    <Setter Property="UIElement.Visibility" TargetName="Hover" Value="Visible" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <TextBlock Text="Settings" FontSize="24" Margin="10,0,20,0" FontFamily="Segoe UI Semilight"></TextBlock>
+                            </DockPanel>
+                            <DockPanel LastChildFill="False" Margin="15" >
+                                <TextBlock FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" Text="{x:Static res:Resources.PageSizeText}"/>
+                                <ComboBox Margin="10,0,20,0" SelectedItem ="0" Width ="50" DockPanel.Dock="Right">
+                                    <ComboBoxItem Content="A4"/>
+                                    <ComboBoxItem Content="A5"/>
+                                </ComboBox>
+                            </DockPanel>
+                            <DockPanel LastChildFill="False" Margin="15,0,15,10">
+                                <TextBlock FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" Text="{x:Static res:Resources.PageMarginsText}"/>
+                                <StackPanel Margin="10,0,20,0" DockPanel.Dock="Right">
+                                    <TextBox Margin="0,0,0,0" Text ="{x:Static res:Resources.LeftText}" Width ="50"/>   
+                                    <TextBox Margin="0,5,0,0" Text="{x:Static res:Resources.TopText}" Width ="50" />
+                                    <TextBox Margin="0,5,0,0" Text="{x:Static res:Resources.RightText}" Width ="50" />
+                                    <TextBox Margin="0,5,0,0" Text="{x:Static res:Resources.BottomText}" Width ="50" />
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <RichTextBox x:Name="lbText" Margin="0,0,0,0" VerticalScrollBarVisibility="Auto" MinWidth="0" Padding="10" ScrollViewer.CanContentScroll="True"  BorderThickness="0,1,0,0" TextOptions.TextFormattingMode="Ideal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type DockPanel}},Path=ActualWidth}">
+                       
+                        <!--<RichTextBox.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding ElementName=scale, Path=Value}" ScaleY="{Binding ElementName=scale, Path=Value}"/>
+                        </RichTextBox.LayoutTransform>-->
+                        <RichTextBox.Template>
+                            <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                                    <Border 
+                                        CornerRadius="2" 
+                                        Background="{TemplateBinding Background}" 
+                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}"  Padding="5">
+                                    <ScrollViewer x:Name="PART_ContentHost">
+                                        <ScrollViewer.LayoutTransform>
+                                            <ScaleTransform ScaleX="{Binding ElementName=scale, Path=Value}" ScaleY="{Binding ElementName=scale, Path=Value}"/>
+                                        </ScrollViewer.LayoutTransform>
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </RichTextBox.Template>
+                        <FlowDocument/>
+                    </RichTextBox>
+                </DockPanel>
+            </TabItem>
+            <TabItem x:Name="tabStartScreen" >
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Left" Margin="25,25,0,25">
+                        <TextBlock Text="{x:Static res:Resources.RecentText}" HorizontalAlignment="Center" FontFamily="Segoe UI Semilight" FontSize="24" Margin="0,0,0,20"/>
+                    <ListBox Width="150" HorizontalContentAlignment="Center" VerticalAlignment="Center" Margin="25,0,25,0" ScrollViewer.VerticalScrollBarVisibility="Visible" >
+                        <ListBoxItem>
+                            <TextBlock>
+                                Пыщь
+                            </TextBlock>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <TextBlock>
+                                Пыщь
+                            </TextBlock>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <TextBlock>
+                                Пыщь
+                            </TextBlock>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <TextBlock>
+                                Пыщь
+                            </TextBlock>
+                        </ListBoxItem>
+                    </ListBox>
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right" Margin="0,25,0,50">
+                        <Image x:Name="imgOdt" HorizontalAlignment="Center" VerticalAlignment="Center" Height="128" Margin="0,0,25,25"  Width="128" Source="{DynamicResource odt_icon}"/>
+                        <TextBlock x:Name="lbMessage" HorizontalAlignment="Center"  TextWrapping="WrapWithOverflow" Text="{x:Static res:Resources.WelcomeText}" VerticalAlignment="Center" FontSize="24" FontFamily="Segoe UI SemiLight" Margin="25,0,50,0" />
+                    </StackPanel>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+
+    <Window.Resources>
+        <BitmapImage x:Key="file" UriSource="Resources/file.png" />
+        <BitmapImage x:Key="file_hover" UriSource="Resources/file_hover.png" />
+        <BitmapImage x:Key="error_icon" UriSource="Resources/error_icon.png" />
+        <BitmapImage x:Key="icon" UriSource="Resources/icon.png" />
+        <BitmapImage x:Key="odt_icon" UriSource="Resources/odt_icon.png" />
+        <BitmapImage x:Key="question_mark" UriSource="Resources/question_mark.png" />
+        <BitmapImage x:Key="sad_face" UriSource="Resources/sad_face.png" />
+        <BitmapImage x:Key="save_as" UriSource="Resources/save_as.png" />
+        <BitmapImage x:Key="save_as_hover" UriSource="Resources/save_as_hover.png" />
+        <BitmapImage x:Key="settings" UriSource="Resources/settings.png" />
+        <BitmapImage x:Key="settings_hover" UriSource="Resources/settings_hover.png" />
+        <BitmapImage x:Key="next" UriSource="Resources/next.png"/>
+    </Window.Resources>
+</metro:Window>
