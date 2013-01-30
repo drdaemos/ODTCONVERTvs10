@@ -14,9 +14,9 @@
     <metro:Window.Resources>
         <x:Array x:Key="recentlist" Type="local:Recent">
             <local:Recent Name="Ololo Manual" Uri="ololo.odt"/>
-            <local:Recent Name="TD-842WR Service Guide" Uri="td842sg.odt"/>
-            <local:Recent Name="Elmo" Uri="10"/>
+            <local:Recent Name="TD-842WR Service Guide" Uri="td842sg.odt"/>            
         </x:Array>
+        <local:PercentageConverter x:Key="PercentageConverter"/>
         <BitmapImage x:Key="file" UriSource="Resources/file.png" />
         <BitmapImage x:Key="file_hover" UriSource="Resources/file_hover.png" />
         <BitmapImage x:Key="error_icon" UriSource="Resources/error_icon.png" />
@@ -360,11 +360,15 @@
         <TextBox x:Name="lbPath" Text="{x:Static res:Resources.SourcePathText}" Margin="125,12,10,0" VerticalAlignment="Top" Height="31" FontFamily="Segoe UI SemiLight" FontSize="16"/>
         <TabControl Margin="0,48,0,0" IsSynchronizedWithCurrentItem="True" SelectedIndex="0" x:Name="tabs">
             <TabItem x:Name="tabStartScreen" Header="{x:Static res:Resources.StartTabText}">
-                <DockPanel LastChildFill="True">
-                    <Border BorderBrush="{x:Static metro:AccentBrushes.Blue}"  BorderThickness="0,0,1,0" >
+                <DockPanel LastChildFill="True" x:Name ="startDock">
+                    <Border BorderBrush="{x:Static metro:AccentBrushes.Blue}"  BorderThickness="0,0,1,0" Width="{Binding 
+                       Converter={StaticResource PercentageConverter}, 
+                       ElementName=startDock, 
+                       Path=ActualWidth, 
+                       ConverterParameter=0.25}">
                         <StackPanel DockPanel.Dock="Left" Margin="0,25,0,25">
                             <TextBlock Text="{x:Static res:Resources.RecentText}" HorizontalAlignment="Left" FontFamily="Segoe UI Semilight" FontSize="24" Margin="25,0,25,20"/>
-                            <ListBox Name ="recentLB"  HorizontalContentAlignment="Stretch" VerticalAlignment="Center" Margin="25,0,25,0" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" ItemsSource="{StaticResource recentlist}" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                            <ListBox Name ="lbRecents"  HorizontalContentAlignment="Stretch" VerticalAlignment="Center" Margin="25,0,25,0" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" ItemsSource="{StaticResource recentlist}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="lbRecents_MouseDoubleClick" >
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:Recent}">
                                     <StackPanel Orientation="Vertical">

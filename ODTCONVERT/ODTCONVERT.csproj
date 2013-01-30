@@ -63,9 +63,6 @@
     <Reference Include="Microsoft.Windows.Shell">
       <HintPath>..\..\..\..\dev\loool\References\Microsoft.Windows.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="Recents">
-      <HintPath>..\..\..\Dropbox\Workspace(vs11)\Recents\Recents\bin\Debug\Recents.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity">
@@ -90,6 +87,7 @@
     </ApplicationDefinition>
     <Compile Include="Recent.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

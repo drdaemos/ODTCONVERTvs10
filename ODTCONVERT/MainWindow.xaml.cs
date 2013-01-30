@@ -37,7 +37,7 @@ namespace ODTCONVERT
             SelectWindowState(State.Start);
             PreviewMouseWheel += Zoom_MouseWheel;
             recents = new RecentHolder();
-            recentLB.ItemsSource = recents.recents;
+            lbRecents.ItemsSource = recents.recents;
         }
 
         private void Zoom_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -54,10 +54,10 @@ namespace ODTCONVERT
         
         private void btnRead_Click(object sender, RoutedEventArgs e)
         {
-            OpenDoc();
-        }
+            OpenDialog();
+        }        
 
-        private void OpenDoc()
+        private void OpenDialog()
         {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -68,43 +68,44 @@ namespace ODTCONVERT
             if (dlg.ShowDialog() == true)
             {
                 lbPath.Text = dlg.FileName;
-                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
 
-                lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-                System.Threading.Thread thread = new System.Threading.Thread(
-                new System.Threading.ThreadStart(
-                   delegate()
-                   {
-                       System.Windows.Threading.DispatcherOperation
-                         dispatcherOp = lbText.Dispatcher.BeginInvoke(
-                         System.Windows.Threading.DispatcherPriority.Normal,
-                         new Action(
-                           delegate()
-                           {
-                               lbText.Document = ParseODT(dlg);
-                               SelectWindowState(State.Text);
-                               recents.recents.Add(new Recent() { Uri = dlg.FileName, Name = dlg.SafeFileName });
-                               recents.Save();
-                           }
-                       ));
-                       dispatcherOp.Completed += new EventHandler(read_Completed);
-                   }
-              ));
-                thread.Start();
+                OpenDoc(dlg.FileName);
+                recents.Update(new Recent() { Uri = dlg.FileName, Name = dlg.SafeFileName, Date = DateTime.Now});
             }
         }
 
+        private void OpenDoc(string path)
+        {
+            pbParse.State = Elysium.Controls.ProgressState.Busy;
+            lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            System.Threading.Thread thread = new System.Threading.Thread(
+            new System.Threading.ThreadStart(
+               delegate()
+               {
+                   System.Windows.Threading.DispatcherOperation
+                     dispatcherOp = lbText.Dispatcher.BeginInvoke(
+                     System.Windows.Threading.DispatcherPriority.Normal,
+                     new Action(
+                       delegate()
+                       {
+                           lbText.Document = ParseODT(path);
+                           SelectWindowState(State.Text);                           
+                       }
+                   ));
+                   dispatcherOp.Completed += new EventHandler(read_Completed);
+               }
+          ));
+            thread.Start();
+        }
         private void NewDoc()
         {
-             lbPath.Text = System.IO.Path.Combine(Environment.CurrentDirectory, "NewDocument"+docinc);
-                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
+             lbPath.Text = System.IO.Path.Combine(Environment.CurrentDirectory, "NewDocument"+Properties.Settings.Default.NewDocuments);                
 
                 lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
                 System.Threading.Thread thread = new System.Threading.Thread(
                 new System.Threading.ThreadStart(
                    delegate()
                    {
-                       ;
                        System.Windows.Threading.DispatcherOperation
                          dispatcherOp = lbText.Dispatcher.BeginInvoke(
                          System.Windows.Threading.DispatcherPriority.Normal,
@@ -121,7 +122,7 @@ namespace ODTCONVERT
               docinc++;
         }
 
-        private void SaveDoc()
+        private void SaveDialog()
         {
             // Create OpenFileDialog 
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -131,30 +132,33 @@ namespace ODTCONVERT
             // Get the selected file name and display in a TextBox 
             if (dlg.ShowDialog() == true)
             {
-                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
-
-                lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-                System.Threading.Thread thread = new System.Threading.Thread(
-                new System.Threading.ThreadStart(
-                   delegate()
-                   {
-                       ;
-                       System.Windows.Threading.DispatcherOperation
-                         dispatcherOp = btnSave.Dispatcher.BeginInvoke(
-                         System.Windows.Threading.DispatcherPriority.Normal,
-                         new Action(
-                           delegate()
-                           {
-                               SavePDF(dlg.FileName);
-                           }
-                       ));
-                       dispatcherOp.Completed += new EventHandler(save_Completed);
-                   }
-              ));
-                thread.Start();
+                SaveDoc(dlg.FileName);
             }
         }
 
+        private void SaveDoc(string path)
+        {
+            pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
+
+            lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            System.Threading.Thread thread = new System.Threading.Thread(
+            new System.Threading.ThreadStart(
+               delegate()
+               {
+                   System.Windows.Threading.DispatcherOperation
+                     dispatcherOp = btnSave.Dispatcher.BeginInvoke(
+                     System.Windows.Threading.DispatcherPriority.Normal,
+                     new Action(
+                       delegate()
+                       {
+                           SavePDF(path);
+                       }
+                   ));
+                   dispatcherOp.Completed += new EventHandler(save_Completed);
+               }
+          ));
+            thread.Start();
+        }
         private void SelectWindowState(State state)
         {
             switch (state)
@@ -183,27 +187,40 @@ namespace ODTCONVERT
             SelectWindowState(State.Error);
             if (e.Exception is FileFormatException)
             {
-                ShowMessage(Message.WrongFormat);
+                SelectWindowState(State.Text);
+                lbStatus.Text = Properties.Resources.WrongFormatText;
             }
             else if (e.Exception is FileNotFoundException)
             {
-                ShowMessage(Message.NotFound);
+                SelectWindowState(State.Text);
+                lbStatus.Text = Properties.Resources.NotFoundText;
             }
-            else ShowMessage(Message.Unknown);
+            else
+            {
+                SelectWindowState(State.Text);
+                lbStatus.Text = Properties.Resources.UnknownProblemText;
+            }
             e.Handled = true;
         }
 
 
-        private FlowDocument ParseODT(Microsoft.Win32.OpenFileDialog dlg)
+        private FlowDocument ParseODT(string path)
         {
             ODTReader reader = new ODTReader();
-            return reader.Read(dlg.FileName);
+            return reader.Read(path);
         }
 
         void read_Completed(object sender, EventArgs e)
         {
-            lbStatus.Text = Properties.Resources.DocumentReadyText;
-            pbParse.State = Elysium.Controls.ProgressState.Normal;
+            var dispatcherOp = pbParse.Dispatcher.BeginInvoke(
+                     System.Windows.Threading.DispatcherPriority.Normal,
+                     new Action(
+                       delegate()
+                       {
+                           lbStatus.Text = Properties.Resources.DocumentReadyText;
+                           pbParse.State = Elysium.Controls.ProgressState.Normal;
+                       }
+                   ));
         }
 
         private void ShowMessage(Message message)
@@ -243,7 +260,7 @@ namespace ODTCONVERT
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            SaveDoc();
+            SaveDialog();
         }
 
         
@@ -310,7 +327,7 @@ namespace ODTCONVERT
             {
                 if ((sender as StackPanel).Name == "spOpen")
                 {
-                    OpenDoc();
+                    OpenDialog();
                 }
                 if ((sender as StackPanel).Name == "spNew")
                 {
@@ -318,5 +335,16 @@ namespace ODTCONVERT
                 }
             }
         }
+
+        private void lbRecents_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (lbRecents.SelectedItem != null)
+            {
+                var item = (lbRecents.SelectedItem as Recent);
+                OpenDoc(item.Uri);
+                recents.Update(new Recent() {Uri = item.Uri, Name = item.Name, Date = DateTime.Now});
+            }
+        }
+
     }
 }
