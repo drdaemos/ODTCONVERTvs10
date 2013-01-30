@@ -120,17 +120,26 @@
   <data name="BottomText" xml:space="preserve">
     <value>Bottom</value>
   </data>
+  <data name="CreateDocumentText" xml:space="preserve">
+    <value>Create new document</value>
+  </data>
   <data name="DocumentReadyText" xml:space="preserve">
     <value>Document is ready</value>
   </data>
   <data name="DocumentSavedText" xml:space="preserve">
     <value>File successfully saved</value>
   </data>
+  <data name="DocumentTabText" xml:space="preserve">
+    <value>Document</value>
+  </data>
   <data name="LeftText" xml:space="preserve">
     <value>Left</value>
   </data>
   <data name="NotFoundText" xml:space="preserve">
     <value>We have not found any file by this path. Maybe you have deleted it? Anyway, try loading something else!</value>
+  </data>
+  <data name="OpenDocumentText" xml:space="preserve">
+    <value>Open an existing document</value>
   </data>
   <data name="PageMarginsText" xml:space="preserve">
     <value>Page margins</value>
@@ -146,6 +155,12 @@
   </data>
   <data name="SourcePathText" xml:space="preserve">
     <value>Here is the path to active document</value>
+  </data>
+  <data name="StartTabText" xml:space="preserve">
+    <value>Start Screen</value>
+  </data>
+  <data name="StartText" xml:space="preserve">
+    <value>Start</value>
   </data>
   <data name="StatusReadyText" xml:space="preserve">
     <value>Ready</value>

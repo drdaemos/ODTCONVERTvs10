@@ -120,17 +120,26 @@
   <data name="BottomText" xml:space="preserve">
     <value>Снизу</value>
   </data>
+  <data name="CreateDocumentText" xml:space="preserve">
+    <value>Создать новый документ</value>
+  </data>
   <data name="DocumentReadyText" xml:space="preserve">
     <value>Документ загружен</value>
   </data>
   <data name="DocumentSavedText" xml:space="preserve">
     <value>Документ успешно сохранен</value>
   </data>
+  <data name="DocumentTabText" xml:space="preserve">
+    <value>Документ</value>
+  </data>
   <data name="LeftText" xml:space="preserve">
     <value>Слева</value>
   </data>
   <data name="NotFoundText" xml:space="preserve">
     <value>Файл не был найден по заданному пути. Куда же он пропал? Попробуйте еще раз!</value>
+  </data>
+  <data name="OpenDocumentText" xml:space="preserve">
+    <value>Открыть существующий документ</value>
   </data>
   <data name="PageMarginsText" xml:space="preserve">
     <value>Поля</value>
@@ -146,6 +155,12 @@
   </data>
   <data name="SourcePathText" xml:space="preserve">
     <value>Путь к активному документу</value>
+  </data>
+  <data name="StartTabText" xml:space="preserve">
+    <value>Старт</value>
+  </data>
+  <data name="StartText" xml:space="preserve">
+    <value>С чего желаете начать?</value>
   </data>
   <data name="StatusReadyText" xml:space="preserve">
     <value>Ожидание</value>

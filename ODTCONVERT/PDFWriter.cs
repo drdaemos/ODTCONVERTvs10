@@ -37,6 +37,7 @@ namespace ODTCONVERT
                     if (i is System.Windows.Documents.Paragraph)
                     {
                         TextRange range = new TextRange(i.ContentStart, i.ContentEnd);
+                        Console.WriteLine(i.Tag);
                         switch (i.Tag as string)
                         {
                             case "Paragraph": iTextSharp.text.Paragraph par = new iTextSharp.text.Paragraph(range.Text, textFont);
@@ -48,6 +49,11 @@ namespace ODTCONVERT
                                               head.SpacingAfter = 10;
                                               pdfDoc.Add(head);
                                               break;
+                            default:          iTextSharp.text.Paragraph def = new iTextSharp.text.Paragraph(range.Text, textFont);
+                                              def.Alignment = Element.ALIGN_JUSTIFIED;
+                                              pdfDoc.Add(def);
+                                              break;
+
                         }
                     }
                     else if (i is System.Windows.Documents.List)
@@ -69,6 +75,12 @@ namespace ODTCONVERT
                     }
                            
                }
+                if (pdfDoc.PageNumber == 0)
+                {
+                    iTextSharp.text.Paragraph par = new iTextSharp.text.Paragraph(" ");
+                    par.Alignment = Element.ALIGN_JUSTIFIED;
+                    pdfDoc.Add(par);
+                }
                pdfDoc.Close();
             }
         }

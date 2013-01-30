@@ -70,6 +70,15 @@ namespace ODTCONVERT.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new document.
+        /// </summary>
+        public static string CreateDocumentText {
+            get {
+                return ResourceManager.GetString("CreateDocumentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Document is ready.
         /// </summary>
         public static string DocumentReadyText {
@@ -88,6 +97,15 @@ namespace ODTCONVERT.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Document.
+        /// </summary>
+        public static string DocumentTabText {
+            get {
+                return ResourceManager.GetString("DocumentTabText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Left.
         /// </summary>
         public static string LeftText {
@@ -102,6 +120,15 @@ namespace ODTCONVERT.Properties {
         public static string NotFoundText {
             get {
                 return ResourceManager.GetString("NotFoundText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open an existing document.
+        /// </summary>
+        public static string OpenDocumentText {
+            get {
+                return ResourceManager.GetString("OpenDocumentText", resourceCulture);
             }
         }
         
@@ -147,6 +174,24 @@ namespace ODTCONVERT.Properties {
         public static string SourcePathText {
             get {
                 return ResourceManager.GetString("SourcePathText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Screen.
+        /// </summary>
+        public static string StartTabText {
+            get {
+                return ResourceManager.GetString("StartTabText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string StartText {
+            get {
+                return ResourceManager.GetString("StartText", resourceCulture);
             }
         }
         

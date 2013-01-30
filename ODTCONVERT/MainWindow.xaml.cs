@@ -28,12 +28,16 @@ namespace ODTCONVERT
     /// </summary>
     public partial class MainWindow : Elysium.Controls.Window
     {
+        private int docinc = 1;
+        private RecentHolder recents;
         public MainWindow()
         {
             InitializeComponent();
             sidebar.Width = 0;
             SelectWindowState(State.Start);
             PreviewMouseWheel += Zoom_MouseWheel;
+            recents = new RecentHolder();
+            recentLB.ItemsSource = recents.recents;
         }
 
         private void Zoom_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -50,6 +54,11 @@ namespace ODTCONVERT
         
         private void btnRead_Click(object sender, RoutedEventArgs e)
         {
+            OpenDoc();
+        }
+
+        private void OpenDoc()
+        {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             // Set filter for file extension and default file extension 
@@ -65,19 +74,82 @@ namespace ODTCONVERT
                 System.Threading.Thread thread = new System.Threading.Thread(
                 new System.Threading.ThreadStart(
                    delegate()
-                   {;
-                      System.Windows.Threading.DispatcherOperation
-                        dispatcherOp = lbText.Dispatcher.BeginInvoke(
-                        System.Windows.Threading.DispatcherPriority.Normal,
-                        new Action(
-                          delegate()
-                          {
-                              lbText.Document = ParseODT(dlg);
-                              SelectWindowState(State.Text);
-                          }
-                      ));
-                      dispatcherOp.Completed += new EventHandler(read_Completed);
-                  }
+                   {
+                       System.Windows.Threading.DispatcherOperation
+                         dispatcherOp = lbText.Dispatcher.BeginInvoke(
+                         System.Windows.Threading.DispatcherPriority.Normal,
+                         new Action(
+                           delegate()
+                           {
+                               lbText.Document = ParseODT(dlg);
+                               SelectWindowState(State.Text);
+                               recents.recents.Add(new Recent() { Uri = dlg.FileName, Name = dlg.SafeFileName });
+                               recents.Save();
+                           }
+                       ));
+                       dispatcherOp.Completed += new EventHandler(read_Completed);
+                   }
+              ));
+                thread.Start();
+            }
+        }
+
+        private void NewDoc()
+        {
+             lbPath.Text = System.IO.Path.Combine(Environment.CurrentDirectory, "NewDocument"+docinc);
+                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
+
+                lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+                System.Threading.Thread thread = new System.Threading.Thread(
+                new System.Threading.ThreadStart(
+                   delegate()
+                   {
+                       ;
+                       System.Windows.Threading.DispatcherOperation
+                         dispatcherOp = lbText.Dispatcher.BeginInvoke(
+                         System.Windows.Threading.DispatcherPriority.Normal,
+                         new Action(
+                           delegate()
+                           {
+                               lbText.Document = new FlowDocument();
+                               SelectWindowState(State.Text);
+                           }
+                       ));
+                   }
+              ));
+              thread.Start();
+              docinc++;
+        }
+
+        private void SaveDoc()
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".pdf";
+            dlg.Filter = "Adobe PDF (*.pdf)|*.pdf";
+            // Get the selected file name and display in a TextBox 
+            if (dlg.ShowDialog() == true)
+            {
+                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
+
+                lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+                System.Threading.Thread thread = new System.Threading.Thread(
+                new System.Threading.ThreadStart(
+                   delegate()
+                   {
+                       ;
+                       System.Windows.Threading.DispatcherOperation
+                         dispatcherOp = btnSave.Dispatcher.BeginInvoke(
+                         System.Windows.Threading.DispatcherPriority.Normal,
+                         new Action(
+                           delegate()
+                           {
+                               SavePDF(dlg.FileName);
+                           }
+                       ));
+                       dispatcherOp.Completed += new EventHandler(save_Completed);
+                   }
               ));
                 thread.Start();
             }
@@ -89,13 +161,13 @@ namespace ODTCONVERT
             {
                 case State.Text:
                     {
-                        tabs.SelectedIndex = 0;
+                        tabs.SelectedIndex = 1;
                         break;
                     }
                 case State.Start:
                 case State.Error:
                     {
-                        tabs.SelectedIndex = 1;
+                        tabs.SelectedIndex = 0;
                         break;
                     }
                 case State.Settings:
@@ -135,28 +207,28 @@ namespace ODTCONVERT
         }
 
         private void ShowMessage(Message message)
-        {           
-            switch (message)
-            {
-                case Message.WrongFormat:
-                    {
-                        imgOdt.Source = LoadImage(@"Resources\error_icon.png");
-                        lbMessage.Text = Properties.Resources.WrongFormatText;
-                        break;
-                    }
-                case Message.NotFound:
-                    {
-                        imgOdt.Source = LoadImage(@"Resources\sad_face.png");
-                        lbMessage.Text = Properties.Resources.NotFoundText;
-                        break;
-                    }
-                case Message.Unknown:
-                    {
-                        imgOdt.Source = LoadImage(@"Resources\question_mark.png");
-                        lbMessage.Text = Properties.Resources.UnknownProblemText;
-                        break;
-                    }
-            }
+        {
+            //switch (message)
+            //{
+            //    case Message.WrongFormat:
+            //        {
+            //            imgOdt.Source = LoadImage(@"Resources\error_icon.png");
+            //            lbMessage.Text = Properties.Resources.WrongFormatText;
+            //            break;
+            //        }
+            //    case Message.NotFound:
+            //        {
+            //            imgOdt.Source = LoadImage(@"Resources\sad_face.png");
+            //            lbMessage.Text = Properties.Resources.NotFoundText;
+            //            break;
+            //        }
+            //    case Message.Unknown:
+            //        {
+            //            imgOdt.Source = LoadImage(@"Resources\question_mark.png");
+            //            lbMessage.Text = Properties.Resources.UnknownProblemText;
+            //            break;
+            //        }
+            //}
         }
 
         private static BitmapImage LoadImage(string path)
@@ -171,37 +243,10 @@ namespace ODTCONVERT
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            // Create OpenFileDialog 
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            // Set filter for file extension and default file extension 
-            dlg.DefaultExt = ".pdf";
-            dlg.Filter = "OpenDocument Text (*.pdf)|*.pdf";
-            // Get the selected file name and display in a TextBox 
-            if (dlg.ShowDialog() == true)
-            {
-                pbParse.State = Elysium.Controls.ProgressState.Indeterminate;
-
-                lbText.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-                System.Threading.Thread thread = new System.Threading.Thread(
-                new System.Threading.ThreadStart(
-                   delegate()
-                   {
-                       ;
-                       System.Windows.Threading.DispatcherOperation
-                         dispatcherOp = btnSave.Dispatcher.BeginInvoke(
-                         System.Windows.Threading.DispatcherPriority.Normal,
-                         new Action(
-                           delegate()
-                           {
-                               SavePDF(dlg.FileName);
-                           }
-                       ));
-                       dispatcherOp.Completed += new EventHandler(save_Completed);
-                   }
-              ));
-                thread.Start();
-            }
+            SaveDoc();
         }
+
+        
 
         private void scale_Click(object sender, EventArgs e)
         {
@@ -221,8 +266,9 @@ namespace ODTCONVERT
                 PDFWriter pdf = new PDFWriter();
                 pdf.Write(outputPath, lbText.Document);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message + e.StackTrace);
                 SelectWindowState(State.Error);
                 ShowMessage(Message.Unknown);
             }
@@ -256,6 +302,21 @@ namespace ODTCONVERT
             da.To = 0;
             da.Duration = TimeSpan.FromSeconds(0.3);
             sidebar.BeginAnimation(StackPanel.WidthProperty, da);
+        }
+
+        private void StartMenu_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender.GetType() == typeof(StackPanel))
+            {
+                if ((sender as StackPanel).Name == "spOpen")
+                {
+                    OpenDoc();
+                }
+                if ((sender as StackPanel).Name == "spNew")
+                {
+                    NewDoc();
+                }
+            }
         }
     }
 }
